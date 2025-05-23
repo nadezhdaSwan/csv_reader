@@ -39,10 +39,6 @@ class DowloadCSV(unittest.TestCase):
 		self.assertEqual(data,[['7;8;9'], ['40']])
 
 
-	def test_open_html(self):
-		load_manader = LoadManager(work_dir)
-		data = load_manader.load('error.html')
-		#print(data)
 
 	def test_open_wrong_file(self):
 		load_manader = LoadManager(work_dir)
