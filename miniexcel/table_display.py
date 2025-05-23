@@ -9,23 +9,41 @@ from miniexcel.load_manager import LoadManager
 class TableChildFrame(wx.MDIChildFrame):
     def __init__(self, parent, filename: str):
         super().__init__(parent, title=filename.split('/')[-1], size=(500, 300))
+
+        # таблица
         self.table = EditableGridTable(filename)
-        
         self.grid = wx.grid.Grid(self)
         self.grid.SetTable(self.table, takeOwnership=True)
         self.grid.EnableEditing(True)
-        self.grid.AutoSizeColumns()
         
+        # кнопка масштабирования
+        self.btn_autosize = wx.Button(self, label="AutoSize")
+        self.btn_autosize.Bind(wx.EVT_BUTTON, self.on_autosize)
+
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(self.grid, 1, wx.EXPAND | wx.ALL, 10)
+        sizer.Add(self.btn_autosize, flag = wx.ALIGN_CENTER | wx.ALL, border = 10)
+        sizer.Add(self.grid, flag = wx.ALIGN_CENTER)
+        #sizer.Add(self.grid, 1, wx.ALL, 10)
+        #sizer.Add(self.grid, 1, wx.ALIGN_CENTER | wx.ALL, 10)
         self.SetSizer(sizer)
+        self.Layout()
         
         self.Bind(wx.EVT_CLOSE, self.on_close)
+
+
+    def on_autosize(self, event):
+        """Масштабирует таблицу  под размер содержимого CSV-файла"""
+        self.grid.AutoSizeColumns()
+        self.grid.AutoSizeRows()
+        self.Layout()
+
+
+
     
     def on_close(self, event):
-        """Перехватываем закрытие, чтобы не удалять фрейм полностью"""
-        #self.Iconize()  # Сворачиваем вместо закрытия
-        self.Destroy()  # Раскомментировать для реального закрытия
+        """Обработчик закрытия таблицы"""
+        # Реально уничтожаем окно
+        self.Destroy()
 
     def get_current_data(self):
         """Возвращает текущие данные из таблицы"""

@@ -1,3 +1,4 @@
 /examples
+/doc
 __pycache__/
 *.whl

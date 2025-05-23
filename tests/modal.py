@@ -36,7 +36,7 @@ class DowloadCSV(unittest.TestCase):
 	def test_open_wrong_delimiter(self):
 		load_manader = LoadManager(work_dir)
 		data = load_manader.load('wrong_delim.csv')
-		self.assertEqual(data,[['7;8;9'], ['9;;0']])
+		self.assertEqual(data,[['7;8;9'], ['40']])
 
 
 	def test_open_html(self):

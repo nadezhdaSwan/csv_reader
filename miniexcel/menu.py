@@ -7,11 +7,12 @@ from miniexcel.table_display import TableChildFrame
 
 class MainMDIFrame(wx.MDIParentFrame):
     def __init__(self, cache_path: str, work_dir: str):
-        super().__init__(None, title="CSV Reader", size=(800, 600))
+        super().__init__(None, title="CSV Reader", size=(1000, 800))
         self.cache_path = Path(cache_path)
         self.work_dir = work_dir
         # Инициализация интерфейса
         self.init_ui()
+        self.table_frames = []
 
         
     def init_ui(self):
@@ -31,17 +32,22 @@ class MainMDIFrame(wx.MDIParentFrame):
         exit_item = file_menu.Append(wx.ID_EXIT, "Exit\tCtrl+Q", "Exit the application")
 
 
-        # Меню "Help" (кнопка About)
-        help_menu = wx.Menu()
-        about_item = help_menu.Append(wx.ID_ABOUT, "About", "About this application")
+        # Меню "About" (кнопка About)
+        about_menu = wx.Menu()
+        about_item = about_menu.Append(wx.ID_ABOUT, "About", "About this application")
+
+        
         
         # Добавляем меню в менюбар
         menubar.Append(file_menu, "&File")
-        menubar.Append(help_menu, "&Help")
+        menubar.Append(about_menu, "&About")
+
     
         # Устанавливаем менюбар в окно
         self.SetMenuBar(menubar)
     
+        # Статусбар
+        self.CreateStatusBar()
 
         # Привязка событий
         self.Bind(wx.EVT_MENU, self.on_open, open_item)
@@ -50,6 +56,7 @@ class MainMDIFrame(wx.MDIParentFrame):
         self.Bind(wx.EVT_MENU, self.on_save_as, save_as_item)
         self.Bind(wx.EVT_MENU, self.on_close_current, on_close_current_item)
 
+        self.Bind(wx.EVT_MENU, self.on_about, about_item)
         # Показываем окно
         self.Show()
 
@@ -68,7 +75,12 @@ class MainMDIFrame(wx.MDIParentFrame):
             path = file_dialog.GetPath()
             frame = TableChildFrame(self, path)
             frame.Show()
+            self.table_frames.append(frame)
+            self.update_status()
 
+    def update_status(self):
+        """Обновляет статус бар"""
+        self.SetStatusText(f"Открыто таблиц: {len(self.table_frames)}")
 
 
     def on_save(self, event):
@@ -97,7 +109,11 @@ class MainMDIFrame(wx.MDIParentFrame):
     def on_close_current(self, event):
         """Закрытие активной таблицы"""
         active_child = self.GetActiveChild()
-        #print(active_child.get_current_data())
+
+        if active_child in self.table_frames:
+            self.table_frames.remove(active_child)
+            self.SetStatusText(f"Открыто таблиц: {len(self.table_frames)}")
+            
         if active_child:
             active_child.Close()
     
@@ -105,3 +121,8 @@ class MainMDIFrame(wx.MDIParentFrame):
     def on_exit(self, event):
         """Обработчик для Exit"""
         self.Close()
+
+    def on_about(self, event):
+        """Обработчик для About"""
+        wx.MessageBox("This program can open and edit csv-files.",
+                     "About", wx.OK | wx.ICON_INFORMATION)
