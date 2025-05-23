@@ -2,15 +2,18 @@ import unittest
 import os
 from pathlib import Path
 
+from miniexcel.load_manager import LoadManager
+from miniexcel.main import work_dir
+
+
 
 class DowloadCSV(unittest.TestCase):
 
 	def test_csv_load_and_save_file(self):
-		from miniexcel.load_manager import LoadManager
-		from miniexcel.main import work_dir
 
 		load_manader = LoadManager(work_dir)
 		data = load_manader.load('biostats.csv')
+
 		self.assertEqual(data[0],['Name', 'Gender', 'Age', 'Height', 'Weight'])
 
 		newfile = 'biostats_new.csv'
@@ -20,9 +23,31 @@ class DowloadCSV(unittest.TestCase):
 
 		os.remove(Path(work_dir)/Path(newfile))
 
-	
+	def test_open_not_csv(self):
+		load_manader = LoadManager(work_dir)
+		data = load_manader.load('error_file.txt')
+		self.assertEqual(data,[[]])
+
+	def test_open_empty_csv(self):
+		load_manader = LoadManager(work_dir)
+		data = load_manader.load('empty.csv')
+		self.assertEqual(data,[[]])
+
+	def test_open_wrong_delimiter(self):
+		load_manader = LoadManager(work_dir)
+		data = load_manader.load('wrong_delim.csv')
+		self.assertEqual(data,[['7;8;9'], ['9;;0']])
 
 
+	def test_open_html(self):
+		load_manader = LoadManager(work_dir)
+		data = load_manader.load('error.html')
+		#print(data)
+
+	def test_open_wrong_file(self):
+		load_manader = LoadManager(work_dir)
+		data = load_manader.load('wrong_file.csv')
+		#print(data)
 
 
 

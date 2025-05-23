@@ -13,7 +13,7 @@ cache_path = '.cache'
 
 if __name__ == "__main__":
     app = wx.lib.mixins.inspection.InspectableApp()
-    frame = MainMDIFrame(cache_path)
+    frame = MainMDIFrame(cache_path, work_dir)
     frame.Show()
     app.MainLoop()
 
